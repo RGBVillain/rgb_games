@@ -17,8 +17,10 @@ struct SPage {
 };
 
 struct SGame {
-	::std::vector<SPage>			Pages			= {};
-	uint32_t						CurrentPage		= 0;
+	::std::vector<SPage>			Pages				= {};
+	uint32_t						CurrentPage			= 0;
+
+	char							StoryFolder[4096]	= "test_story";
 };
 
 int						fileSize		(FILE* fp) {
@@ -76,9 +78,9 @@ int						loadLines		(SPage & page, const ::std::vector<std::string> & pageLines)
 	return 0;
 }
 
-int						loadPage		(SPage & page, uint32_t pageIndex) {
+int						loadPage		(const char* folderName, SPage & page, uint32_t pageIndex) {
 	char					fileName[4096]	= {};
-	sprintf_s(fileName, "%u.txt", pageIndex);
+	sprintf_s(fileName, "%s/%u.txt", folderName, pageIndex);
 	FILE		* fp			= 0;
 	if(fopen_s(&fp, fileName, "rb")) {
 		superp("Failed to open file '%s'", fileName);
@@ -154,7 +156,7 @@ int					step					(SGame & game) {
 
 	SPage					& page			= game.Pages[game.CurrentPage];
 
-	if(loadPage(page, game.CurrentPage)) {
+	if(loadPage(game.StoryFolder, page, game.CurrentPage)) {
 		superp("Failed to load page %i", game.CurrentPage);
 		return 1;
 	}
